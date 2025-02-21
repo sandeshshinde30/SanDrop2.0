@@ -4,14 +4,17 @@ import { uploadFile, getSignedUrl } from "../services/api";
 import axios from "axios";
 import { Plus, Send } from "lucide-react"; 
 import { FileText, Image, File, FileVideo, FileAudio, FileArchive, FileCode } from "lucide-react";
-
+import config from "../url.js";
 
 const FileUpload = () => {
+  const [files, setFiles] = useState([]);  // Store multiple files
   const [error, setError] = useState("");
-  const [url, setUrl] = useState("");
-  const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+const [uploadedFiles, setUploadedFiles] = useState([]); // Store uploaded files
 
+  
   const fileInputRef = useRef();
 
   const getFileIcon = (fileType) => {
@@ -36,55 +39,84 @@ const FileUpload = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const response = await getSignedUrl();
-      setUrl(response.url);
+      // const response = await getSignedUrl();
+      // setUrl(response.url);
     };
     getData();
   }, []);
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setError("");
-    } else {
-      setError("Please select a file.");
+    const selectedFiles = Array.from(e.target.files); 
+    const maxFileSize = user ? 100 * 1024 * 1024 : 10 * 1024 * 1024; 
+
+    const validFiles = selectedFiles.filter(file => file.size <= maxFileSize);
+
+    if (validFiles.length === 0) {
+        setError(`File size exceeds the limit of ${user ? "100MB" : "10MB"}.`);
+        return;
     }
-  };
 
-  const generateUniqueCode = () => {
-    return Math.floor(100000 + Math.random() * 900000); 
-  };
+    setFiles(user ? validFiles : [validFiles[0]]);  
+    setError("");
+};
 
-  const handleUpload = async () => {
-    if (file) {
-      setLoading(true);
-      await uploadFile(url, file);
-      const finalUrl = url.split("?")[0];
-      setUrl(finalUrl);
+const generateUniqueCode = () => {
+    return Math.floor(100000 + Math.random() * 900000);
+};
 
-      const uniqueCode = generateUniqueCode();
-
-      try {
-        await axios.post("http://localhost:8000/api/store-file", {
-          fileUrl: finalUrl,
-          uniqueCode: uniqueCode,
-        });
-        alert(`File successfully uploaded with code: ${uniqueCode}`);
-      } catch (err) {
-        console.error("Error storing file data:", err);
-        alert("Error storing file information.");
-      }
-
-      setFile(null);
-      setLoading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    } else {
+const handleUpload = async () => {
+  if (files.length === 0) {
       setError("No file selected.");
-    }
-  };
+      return;
+  }
+
+  setLoading(true);
+
+  try {
+      const response = await Promise.all(files.map(() => getSignedUrl()));
+      const urls = response.map(res => res.url);
+
+      const uploadedFileData = await Promise.all(files.map(async (file, index) => {
+          const uploadUrl = urls[index];
+
+          await uploadFile(uploadUrl, file);
+          const finalUrl = uploadUrl.split("?")[0];
+
+          const uniqueCode = generateUniqueCode();
+          const userEmail = user ? user.email : "guest@sandrop.com";
+
+          await axios.post(`${config.API_BASE_URL}/store-file`, {
+              fileUrl: finalUrl,
+              uniqueCode: uniqueCode,
+              email: userEmail,
+              fileName: file.name,
+              fileType: file.type,
+              fileSize: file.size
+          });
+
+          return { fileName: file.name, uniqueCode };
+      }));
+
+      setUploadedFiles(uploadedFileData); // Store uploaded file data
+      setShowSuccessPopup(true); // Show popup
+
+      setFiles([]); // Clear selected files
+
+  } catch (err) {
+      console.error("Error uploading files:", err);
+      alert("Error uploading files.");
+  }
+
+  setLoading(false);
+  if (fileInputRef.current) fileInputRef.current.value = "";
+};
+
+const truncateFileName = (name, length = 15) => {
+  return name.length > length ? name.substring(0, length) + "..." : name;
+};
+
+
+
 
   return (
     <div className="flex flex-col items-center justify-center bg-gray-100">
@@ -102,42 +134,44 @@ const FileUpload = () => {
             <span className="text-gray-700 text-sm">Choose a file</span>
           </label>
           <input
-            type="file"
-            id="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-          />
+    type="file"
+    id="file"
+    ref={fileInputRef}
+    onChange={handleFileChange}
+    className="hidden"
+    multiple={!!user} 
+/>
+
         </div>
 
       
-        {file && (
+        {files.length > 0 && (
   <div className="w-full">
-    <div className="flex items-center justify-between bg-gray-200 px-3 py-2 rounded-lg relative group">
-      <div className="flex items-center gap-2">
-        {getFileIcon(file.type)}
-        <span 
-          className="text-gray-700 text-sm truncate max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap"
-          title={file.name}
-        >
-          {file.name}
-        </span>
-      </div>
-      
- 
-      <span className="text-gray-500 text-xs group-hover:hidden">
-        {formatFileSize(file.size)}
-      </span>
+    {files.map((file, index) => (
+      <div key={index} className="flex items-center justify-between bg-gray-200 px-3 py-2 rounded-lg relative group mb-2">
+        <div className="flex items-center gap-2">
+          {getFileIcon(file.type)}
+          <span 
+            className="text-gray-700 text-sm truncate max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap"
+            title={file.name}
+          >
+            {file.name}
+          </span>
+        </div>
 
-    
-      <button 
-        onClick={() => setFile(null)} 
-        className="text-red-500 hover:text-red-700 hidden group-hover:block"
-        title="Remove file"
-      >
-        ❌
-      </button>
-    </div>
+        <span className="text-gray-500 text-xs group-hover:hidden">
+          {formatFileSize(file.size)}
+        </span>
+
+        <button 
+          onClick={() => setFiles(files.filter((_, i) => i !== index))} 
+          className="text-red-500 hover:text-red-700 hidden group-hover:block"
+          title="Remove file"
+        >
+          ❌
+        </button>
+      </div>
+    ))}
 
     <div className="w-full mt-4">
       <button
@@ -159,13 +193,36 @@ const FileUpload = () => {
   </div>
 )}
 
-
-
-
-
-       
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
       </form>
+
+    
+
+{showSuccessPopup && (
+  <div className="fixed inset-0 bg-black/10 backdrop-blur-[1px] flex items-center justify-center">
+    <div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
+      <h2 className="text-lg font-semibold mb-3">Upload Successful! </h2>
+      <p className="text-gray-700 mb-4">Your files have been uploaded.</p>
+
+      <div className="text-left text-sm bg-gray-100 p-3 rounded-lg">
+        {uploadedFiles.map((file, index) => (
+          <p key={index}>
+            {truncateFileName(file.fileName)} - <strong className="tracking-wider">Code: {file.uniqueCode}</strong>
+          </p>
+        ))}
+      </div>
+
+      <button
+        className="bg-green-500  text-white py-2 px-4 rounded-lg mt-4 hover:bg-green-700"
+        onClick={() => setShowSuccessPopup(false)}
+      >
+        OK
+      </button>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };

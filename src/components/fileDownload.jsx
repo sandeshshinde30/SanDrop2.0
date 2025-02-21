@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
-
+import config from "../url.js";
 const FileDownload = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [fileUrl, setFileUrl] = useState("");
@@ -8,6 +8,7 @@ const FileDownload = () => {
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const inputRefs = useRef([]);
+
 
   const handleChange = (index, value) => {
     if (!/^[\d]?$/.test(value)) return;
@@ -35,7 +36,7 @@ const FileDownload = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8000/api/get-file/${enteredCode}`);
+      const response = await axios.get(`${config.API_BASE_URL}/get-file/${enteredCode}`);
       setFileUrl(response.data.fileUrl);
       setShowPopup(true);
     } catch (err) {
@@ -73,7 +74,7 @@ const FileDownload = () => {
           {loading ? (
             <div className="animate-spin h-5 w-5 border-4 border-white border-t-transparent rounded-full"></div>
           ) : (
-            <h1 className="text-md font-medium">Download</h1>
+            <h1 className="text-md font-medium">Receive</h1>
           )}
         </button>
       </div>
@@ -89,7 +90,7 @@ const FileDownload = () => {
               download
               className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700"
             >
-              Download File
+              Receive File
             </a>
             <button
               className="block w-full mt-3 text-gray-600 underline hover:text-gray-800"

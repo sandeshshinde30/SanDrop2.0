@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import config from "../url.js";
 
 const Login = ({ setUser }) => {
     const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const Login = ({ setUser }) => {
         setSuccess("");
 
         try {
-            const response = await fetch("http://localhost:8000/api/login", {
+            const response = await fetch(`${config.API_BASE_URL}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
@@ -36,7 +37,7 @@ const Login = ({ setUser }) => {
                 localStorage.setItem("user", JSON.stringify(data.user));
                 setSuccess("Login successful! Redirecting...");
                 setTimeout(() => {
-                    window.location.href = "/";
+                    window.location.href = "/profile";
                 }, 2000);
             } else {
                 setError(data.message || "Login failed.");

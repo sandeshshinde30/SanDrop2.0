@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-
+import config from "../url.js";
 const Register = ({ setUser, user }) => {
     const navigate = useNavigate();
 
-    // Redirect to home if already logged in
+    
     useEffect(() => {
         if (user) {
             navigate("/");
@@ -32,7 +32,7 @@ const Register = ({ setUser, user }) => {
         setSuccess("");
 
         try {
-            const response = await fetch("http://localhost:8000/api/register", {
+            const response = await fetch(`${config.API_BASE_URL}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)

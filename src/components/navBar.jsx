@@ -17,7 +17,7 @@ const Navbar = ({user,userName}) => {
   }
 
   return (
-    <nav className="flex justify-between items-center shadow-sm border-b-1 border-blue-400 py-2 px-6 bg-white relative z-10">
+    <nav className="flex justify-between items-center shadow-sm border-b-1 border-blue-400 py-3 pl-20 pr-5 bg-white relative z-10">
 
       <h1 className="text-2xl cursor-pointer font-extrabold text-[#0077B6] tracking-wider"
       onClick={homePageRoute}>SANDROP</h1>
@@ -27,13 +27,13 @@ const Navbar = ({user,userName}) => {
          onClick={profilePageRoute}
          >
          <h1>{userName}</h1>
-         <FaUserCircle className="h-6 w-6 text-gray-700 " />
+         <FaUserCircle className="h-6 w-6 text-gray-400 " />
        </div>
        
          )
         : <button 
         onClick={handleLoginBtn}
-        className="bg-blue-300 py-1 px-4 text-gray-700 font-bold rounded-md cursor-pointer shadow-2xl ">Login
+        className="bg-[#0077B6] text-white py-1 px-4 font-bold rounded-md cursor-pointer shadow-2xl ">Login
         </button>}
       </div>
     </nav>
