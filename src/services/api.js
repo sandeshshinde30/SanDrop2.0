@@ -8,8 +8,10 @@ const API_URI = 'http://localhost:8000';
 
 export const getSignedUrl = async (data) => {
     try {
-        const response = await axios.get(`${API_URI}/image-url`);
+        const response = await axios.get(`${API_URI}/api/image-url`);
+        console.log(response.data);
         return response.data;
+        
     } catch (error) {
         console.log('Error while calling the API ', error.message);
         return error.response.data;
