@@ -1,10 +1,11 @@
 import axios from 'axios';
+import config from "../url.js";
 
 const headers = {
     "Content-Type": "multipart/form-data"
 }
 
-const API_URI = 'http://localhost:8000';
+const API_URI = '${config.API_BASE_URL}';
 
 export const getSignedUrl = async (data) => {
     try {
