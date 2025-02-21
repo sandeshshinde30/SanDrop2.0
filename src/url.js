@@ -1,5 +1,5 @@
 const url = {
-    API_BASE_URL: "http://3.108.220.254:8000/api",
+    API_BASE_URL: "https://vogueprism.com/api",
 };
 
 export default url;
