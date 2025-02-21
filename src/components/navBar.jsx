@@ -8,16 +8,28 @@ const Navbar = ({user,userName}) => {
     navigate('/login')
   }
 
+  const homePageRoute = () => {
+    navigate('/')
+  }
+
+  const profilePageRoute = () => {
+    navigate('/profile')
+  }
+
   return (
-    <nav className="flex justify-between items-center shadow-2xl py-2 px-6 bg-white ">
-    
-      <h1 className="text-2xl font-extrabold text-gray-800">Sandrop</h1>
+    <nav className="flex justify-between items-center shadow-sm border-b-1 border-blue-400 py-2 px-6 bg-white relative z-10">
+
+      <h1 className="text-2xl cursor-pointer font-extrabold text-[#0077B6] tracking-wider"
+      onClick={homePageRoute}>SANDROP</h1>
       <div>
         {user ?(
-         <div className="flex gap-2 text-md">
-            <h1>{userName}</h1>
-            <FaUserCircle  className="h-6 w-6 text-gray-700 cursor-pointer" />
-         </div>
+         <div className="flex gap-2 items-center text-gray-600 text-sm cursor-pointer"
+         onClick={profilePageRoute}
+         >
+         <h1>{userName}</h1>
+         <FaUserCircle className="h-6 w-6 text-gray-700 " />
+       </div>
+       
          )
         : <button 
         onClick={handleLoginBtn}

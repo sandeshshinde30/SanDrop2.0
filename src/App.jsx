@@ -5,6 +5,7 @@ import HomePage from "./pages/homePage";
 import Login from "./components/login";
 import Register from "./components/register";
 import Navbar from "./components/navBar";
+import Profile from "./components/profilePage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -25,10 +26,9 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route
-          path="/register"
-          element={!user ? <Register setUser={setUser} /> : <h1>Welcome, {user?.username}!</h1>}
-        />
+        <Route path="/register" element={<Register setUser={setUser}/>} />
+        <Route path="/profile" element={<Profile setUser={setUser}/>} />
+
       </Routes>
     </Router>
   );
