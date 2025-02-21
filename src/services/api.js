@@ -5,11 +5,10 @@ const headers = {
     "Content-Type": "multipart/form-data"
 }
 
-const API_URI = '${config.API_BASE_URL}';
 
 export const getSignedUrl = async (data) => {
     try {
-        const response = await axios.get(`${API_URI}/api/image-url`);
+        const response = await axios.get(`${config.API_BASE_URL}/image-url`);
         console.log(response.data);
         return response.data;
         
