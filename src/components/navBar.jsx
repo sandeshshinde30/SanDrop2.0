@@ -17,7 +17,7 @@ const Navbar = ({user,userName}) => {
   }
 
   return (
-    <nav className="flex justify-between items-center shadow-sm border-b-1 border-blue-400 py-3 pl-20 pr-5 bg-white relative z-10">
+    <nav className="flex justify-between items-center shadow-sm border-b-1 border-blue-400 py-3 lg:pl-20 pl-10 pr-5 bg-white relative z-10">
 
       <h1 className="text-2xl cursor-pointer font-extrabold text-[#0077B6] tracking-wider"
       onClick={homePageRoute}>SANDROP</h1>

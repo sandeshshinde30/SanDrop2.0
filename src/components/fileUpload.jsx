@@ -121,7 +121,7 @@ const truncateFileName = (name, length = 15) => {
   return (
     <div className="flex flex-col items-center justify-center bg-gray-100">
       <form
-        className="bg-white p-6 rounded-lg shadow-md w-80 flex flex-col gap-4"
+        className="bg-white p-6 rounded-lg shadow-md w-80  flex flex-col gap-4"
         onSubmit={(e) => e.preventDefault()}
       >
 

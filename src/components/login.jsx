@@ -49,7 +49,7 @@ const Login = ({ setUser }) => {
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-xl">
+            <div className="w-full max-w-md bg-white p-6 m-5 rounded-lg shadow-xl">
                 <h2 className="text-2xl font-bold text-center text-[#0077B6] mb-4">Login</h2>
                 {error && <p className="text-red-500 text-center">{error}</p>}
                 {success && <p className="text-green-500 text-center">{success}</p>}
